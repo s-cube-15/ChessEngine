@@ -47,8 +47,7 @@ class GameState():
         else:
             self.enpassantPossible = ()
 
-
-              if move.isCastleMove:
+        if move.isCastleMove:
             if move.endCol - move.startCol == 2:
                 self.board[move.endRow][move.endCol -
                                         1] = self.board[move.endRow][move.endCol+1]
@@ -57,3 +56,92 @@ class GameState():
                 self.board[move.endRow][move.endCol +
                                         1] = self.board[move.endRow][move.endCol-2]
                 self.board[move.endRow][move.endCol-2] = '--'
+
+        self.updateCastleRights(move)
+        self.castleRightsLog.append(CastleRights(
+            self.currentCastlingRight.wks, self.currentCastlingRight.wqs, self.currentCastlingRight.bks, self.currentCastlingRight.bqs))
+
+    def undoMove(self):
+        if len(self.moveLog) != 0:
+            move = self.moveLog.pop()
+            self.board[move.startRow][move.startCol] = move.pieceMoved
+            self.board[move.endRow][move.endCol] = move.pieceCaptured
+            self.whitetoMove = not self.whitetoMove
+
+        if move.pieceMoved == 'wK':
+            self.whiteKingLocation = (move.startRow, move.startCol)
+        elif move.pieceMoved == "bK":
+            self.blackKingLocation = (move.startRow, move.startCol)
+
+        if move.isEnpassantMove:
+            self.board[move.endRow][move.endCol] = '--'
+            self.board[move.startRow][move.endCol] = move.pieceCaptured
+            self.enpassantPossible = (move.endRow, move.endCol)
+
+        if move.pieceMoved[1] == 'p' and abs(move.startRow - move.endRow) == 2:
+            self.enpassantPossible = ()
+
+        self.castleRightsLog.pop()
+        newRights = self.castleRightsLog[-1]
+        self.currentCastlingRight = CastleRights(
+            newRights.wks, newRights.bks, newRights.wqs, newRights.bqs)
+
+        if move.isCastleMove:
+            if move.endCol - move.startCol == 2:
+                self.board[move.endRow][move.endCol +
+                                        1] = self.board[move.endRow][move.endCol-1]
+                self.board[move.endRow][move.endCol-1] = '--'
+            else:
+                self.board[move.endRow][move.endCol -
+                                        2] = self.board[move.endRow][move.endCol+1]
+                self.board[move.endRow][move.endCol+1] = '--'
+
+    def updateCastleRights(self, move):
+        if move.pieceMoved == 'wK':
+            self.currentCastlingRight.wks = False
+            self.currentCastlingRight.wqs = False
+        elif move.pieceMoved == 'bK':
+            self.currentCastlingRight.bks = False
+            self.currentCastlingRight.bqs = False
+        elif move.pieceMoved == 'wR':
+            if move.startRow == 7:
+                if move.startCol == 0:
+                    self.currentCastlingRight.wqs = False
+                elif move.startCol == 7:
+                    self.currentCastlingRight.wks = False
+        elif move.pieceMoved == 'bR':
+            if move.startRow == 0:
+                if move.startCol == 0:
+                    self.currentCastlingRight.bqs = False
+                elif move.startCol == 7:
+                    self.currentCastlingRight.bks = False
+
+    def getValidMoves(self):
+        tempEnpassantPossible = self.enpassantPossible
+        tempCastleRights = CastleRights(self.currentCastlingRight.wks, self.currentCastlingRight.bks,
+                                        self.currentCastlingRight.wqs, self.currentCastlingRight.bqs)
+        moves = self.getAllPossibleMoves()
+        if self.whitetoMove:
+            self.getCastleMoves(
+                self.whiteKingLocation[0], self.whiteKingLocation[1], moves)
+        else:
+            self.getCastleMoves(
+                self.blackKingLocation[0], self.blackKingLocation[1], moves)
+        for i in range(len(moves)-1, -1, -1):
+            self.makeMove(moves[i])
+            self.whitetoMove = not self.whitetoMove
+            if self.inCheck():
+                moves.remove(moves[i])
+            self.whitetoMove = not self.whitetoMove
+            self.undoMove()
+        if len(moves) == 0:
+            if self.inCheck():
+                self.checkMate = True
+            else:
+                self.staleMate = True
+        else:
+            self.checkMate = False
+            self.staleMate = False
+        self.enpassantPossible = tempEnpassantPossible
+        self.currentCastlingRight = tempCastleRights
+        return moves
