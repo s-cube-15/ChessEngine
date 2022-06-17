@@ -302,8 +302,7 @@ class GameState():
                     Move((r, c), (r, c-2), self.board, isCastleMove=True))
 
 
-
-          class CastleRights():
+class CastleRights():
     def __init__(self, wks, bks, wqs, bqs):
         self.wks = wks
         self.bks = bks
@@ -337,4 +336,15 @@ class Move():
         self.isCastleMove = isCastleMove
 
         self.moveID = self.startRow * 1000 + \
-            self.startCol*100 + self.endRow*10 + self.endCol          
+            self.startCol*100 + self.endRow*10 + self.endCol
+
+    def __eq__(self, other):
+        if isinstance(other, Move):
+            return self.moveID == other.moveID
+        return False
+
+    def getChessNotation(self):
+        return self.getRankFile(self.startRow, self.startCol) + self.getRankFile(self.endRow, self.endCol)
+
+    def getRankFile(self, r, c):
+        return self.colsToFiles[c] + self.rowsToRanks[r]
