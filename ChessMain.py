@@ -106,3 +106,9 @@ def highlightSquares(screen, gs, validMoves, sqSelected):
             for move in validMoves:
                 if move.startRow == r and move.startCol == c:
                     screen.blit(s, (SQ_SIZE*move.endCol, SQ_SIZE*move.endRow))
+
+
+def drawGameState(screen, gs, validMoves, sqSelected):
+    drawBoard(screen)
+    highlightSquares(screen, gs, validMoves, sqSelected)
+    drawPieces(screen, gs.board)
