@@ -112,3 +112,13 @@ def drawGameState(screen, gs, validMoves, sqSelected):
     drawBoard(screen)
     highlightSquares(screen, gs, validMoves, sqSelected)
     drawPieces(screen, gs.board)
+
+
+def drawBoard(screen):
+    global colors
+    colors = [p.Color("white"), p.Color("gray")]
+    for r in range(DIMENSION):
+        for c in range(DIMENSION):
+            color = colors[((r+c) % 2)]
+            p.draw.rect(screen, color, p.Rect(
+                c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
