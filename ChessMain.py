@@ -122,3 +122,12 @@ def drawBoard(screen):
             color = colors[((r+c) % 2)]
             p.draw.rect(screen, color, p.Rect(
                 c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
+
+
+def drawPieces(screen, board):
+    for r in range(DIMENSION):
+        for c in range(DIMENSION):
+            piece = board[r][c]
+            if piece != "--":
+                screen.blit(IMAGES[piece], p.Rect(
+                    c*SQ_SIZE, r*SQ_SIZE, SQ_SIZE, SQ_SIZE))
