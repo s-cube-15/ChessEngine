@@ -165,3 +165,7 @@ def drawText(screen, text):
     screen.blit(textObject, textLocation)
     textObject = font.render(text, 0,  p.Color("Black"))
     screen.blit(textObject, textLocation.move(2, 2))
+
+
+if __name__ == '__main__':
+    main()
