@@ -5,5 +5,6 @@
 
 ->The end result of this project is creating a user-friendly chess game from scratch.
 
-->You can have a look at the PPT fot the same @https://drive.google.com/drive/my-drive
+->You can have a look at the PPT fot the same @https://docs.google.com/presentation/d/1_3b-gFrtwS16hvii1iDRjZwGXAyKgUr8/edit#slide=id.p1
+
  
